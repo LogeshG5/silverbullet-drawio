@@ -2,8 +2,8 @@ import { asset, editor, shell, system, space } from "@silverbulletmd/silverbulle
 import { readSetting } from "$sb/lib/settings_page.ts";
 
 
-async function drawIoEdit(diagramPath, diagramData) {
-  var drawioeditor = 'https://embed.diagrams.net/?embed=1&spin=1&proto=json&configure=1';
+async function drawIoEdit(drawioeditor, diagramPath, diagramData) {
+
   const drawioframe = await asset.readAsset("drawio", "assets/drawioframe.js");
   editor.showPanel("modal", 1,
     `
@@ -75,5 +75,13 @@ export async function edit() {
 
   var diagramData = await space.readAttachment(diagramPath);
   diagramData = String.fromCharCode.apply(null, diagramData);
-  await drawIoEdit(diagramPath, diagramData)
+
+  const userConfig = await readSetting("drawio");
+  let drawioeditor = "";
+  if (userConfig && userConfig.editorUrl) {
+    drawioeditor = userConfig.editorUrl;
+  } else {
+    drawioeditor = 'https://embed.diagrams.net/?embed=1&spin=1&proto=json&configure=1';
+  }
+  await drawIoEdit(drawioeditor, diagramPath, diagramData)
 }
