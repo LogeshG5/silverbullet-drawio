@@ -22,14 +22,22 @@ var receive = async function (evt) {
     }
     else if (msg.event == 'init') {
         // Avoids unescaped < and > from innerHTML for valid XML
-        const data = document.getElementById('drawiodata');
-        const svgele = data.getElementsByTagName('svg')[0];
-        const svg = new XMLSerializer().serializeToString(svgele);
-
+        const filename = iframe.getAttribute('drawio-path');
+        const index = filename.lastIndexOf('.');
+        const ext = index !== -1 ? filename.slice(index + 1) : '';
+        const dataDiv = document.getElementById('drawiodata');
+        let data = "";
+        if (ext == 'svg') {
+            const svgele = dataDiv.getElementsByTagName('svg')[0];
+            data = new XMLSerializer().serializeToString(svgele);
+        }
+        else {
+            data = dataDiv;
+        }
         iframe.contentWindow.postMessage(JSON.stringify({
             action: 'load',
             autosave: 1,
-            xml: svg
+            xml: data
         }), '*');
 
     }
