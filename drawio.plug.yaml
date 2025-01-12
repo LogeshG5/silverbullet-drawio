@@ -1,0 +1,15 @@
+name: drawio
+version: 0.1
+assets:
+  - "assets/**/*.*"
+imports:
+  - https://get.silverbullet.md/global.plug.json
+requiredPermissions:
+  - shell
+  - fetch
+functions:
+  editdrawio:
+    path: ./drawio.ts:edit
+    command:
+      name: "Draw.io: Edit diagram"
+      requireMode: r
