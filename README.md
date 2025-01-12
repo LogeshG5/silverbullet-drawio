@@ -1,4 +1,4 @@
-# Silver Bullet plug for drawio diagrams
+# SilverBullet plug for drawio diagrams
 
 This plug adds [draw.io](https://www.drawio.com/) support to Silverbullet.
 

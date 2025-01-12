@@ -22,7 +22,10 @@ var receive = async function (evt) {
     }
     else if (msg.event == 'init') {
         // Avoids unescaped < and > from innerHTML for valid XML
-        var svg = new XMLSerializer().serializeToString(document.getElementById('drawiodata').getElementsByTagName('svg')[0]);
+        const data = document.getElementById('drawiodata');
+        const svgele = data.getElementsByTagName('svg')[0];
+        const svg = new XMLSerializer().serializeToString(svgele);
+
         iframe.contentWindow.postMessage(JSON.stringify({
             action: 'load',
             autosave: 1,
@@ -34,7 +37,7 @@ var receive = async function (evt) {
         // Extracts SVG DOM from data URI to enable links
         const svg = atob(msg.data.substring(msg.data.indexOf(',') + 1));
         const svge = new TextEncoder().encode(svg)
-        diagramPath = document.getElementById('drawioPath').innerHTML;
+        diagramPath = iframe.getAttribute('drawio-path');
         await syscall("space.writeFile", diagramPath, svge);
         await syscall("editor.reloadPage"); //not working
         close();

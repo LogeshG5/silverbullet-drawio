@@ -20,9 +20,8 @@ async function drawIoEdit(drawioeditor, diagramPath, diagramData) {
         }
       </style>
       <div>
-      <div id="drawiodata">${diagramData}</div>
-      <div id="drawioPath">${diagramPath}</div>
-      <iframe id="draioiframe" src=${drawioeditor}></iframe>
+        <div id="drawiodata">${diagramData}</div>
+        <iframe id="draioiframe" src=${drawioeditor} drawio-path='${diagramPath}'></iframe>
       </div>
     `,
 
