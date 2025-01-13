@@ -11,7 +11,7 @@ function base64ToPng(base64String) {
 function base64ToSvg(base64String) {
     base64String = base64String.substring(base64String.indexOf(',') + 1)
     const text = atob(base64String);
-    svg = new TextEncoder().encode(text)
+    const svg = new TextEncoder().encode(text)
     return svg;
 }
 

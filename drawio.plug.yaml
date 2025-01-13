@@ -9,7 +9,13 @@ requiredPermissions:
   - fetch
 functions:
   editdrawio:
-    path: ./drawio.ts:edit
+    path: ./drawio.ts:editDrawioDiagram
     command:
       name: "Draw.io: Edit diagram"
+      requireMode: r
+
+  createdrawio:
+    path: ./drawio.ts:createDrawioDiagram
+    command:
+      name: "Draw.io: Create diagram"
       requireMode: r
