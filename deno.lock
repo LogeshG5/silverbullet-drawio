@@ -15,6 +15,7 @@
     }
   },
   "remote": {
+    "https://cdn.jsdelivr.net/npm/js-base64@3.7.3/base64.min.js": "6cff0c9095739a975632ce6111b68e49852901eeb49f957aa4895eab4ceb190e",
     "https://deno.land/std@0.129.0/_util/assert.ts": "e94f2eb37cebd7f199952e242c77654e43333c1ac4c5c700e929ea3aa5489f74",
     "https://deno.land/std@0.129.0/_util/os.ts": "49b92edea1e82ba295ec946de8ffd956ed123e2948d9bd1d3e901b04e4307617",
     "https://deno.land/std@0.129.0/archive/tar.ts": "35ea1baddec7988cc4034765a2cee7613bc8074bd40940d3f5e98f63070a716a",

@@ -6,6 +6,7 @@ import {
   space,
 } from "@silverbulletmd/silverbullet/syscalls";
 import { readSetting } from "$sb/lib/settings_page.ts";
+import { Base64 } from "js-base64";
 
 function getFileExtension(filename) {
   const index = filename.lastIndexOf(".");
@@ -18,7 +19,7 @@ function getDiagrams(text) {
   let match;
   while ((match = regex.exec(text)) !== null) {
     const ext = getFileExtension(match[1]);
-    if (ext == "svg") {
+    if (ext == "svg" || ext == "png") {
       matches.push(match[1]);
     }
   }
@@ -27,7 +28,7 @@ function getDiagrams(text) {
 
 async function drawIoEdit(drawioeditor, diagramPath, diagramData) {
   const drawioframe = await asset.readAsset("drawio", "assets/drawioframe.js");
-  editor.showPanel(
+  await editor.showPanel(
     "modal",
     1,
     `
@@ -44,11 +45,10 @@ async function drawIoEdit(drawioeditor, diagramPath, diagramData) {
         }
       </style>
       <div>
-        <div id="drawiodata">${diagramData}</div>
+        <div id="drawiodata" hidden>${diagramData}</div>
         <iframe id="draioiframe" src=${drawioeditor} drawio-path='${diagramPath}'></iframe>
       </div>
     `,
-
     `${drawioframe}`
   );
 }
@@ -61,7 +61,7 @@ export async function edit() {
 
   let diagramPath = "";
   if (matches.length == 0) {
-    editor.flashNotification("No diagrams found");
+    editor.flashNotification("No png or svg diagrams attached to this page!", "error");
     return;
   }
   if (matches.length == 1) {
@@ -73,14 +73,18 @@ export async function edit() {
     }));
     const selectedDiagram = await editor.filterBox("Edit", options, "", "");
     if (!selectedDiagram) {
-      await editor.flashNotification("No diagram selected.", "error");
+      await editor.flashNotification("No diagram selected!", "error");
       return;
     }
     diagramPath = directory + "/" + selectedDiagram.name;
   }
+  let diagramData = await space.readAttachment(diagramPath);
   const ext = getFileExtension(diagramPath);
-  var diagramData = await space.readAttachment(diagramPath);
-  diagramData = String.fromCharCode.apply(null, diagramData);
+  if (ext == "svg") {
+    diagramData = String.fromCharCode.apply(null, diagramData);
+  } else if (ext == "png") {
+    diagramData = "data:image/png;base64," + Base64.fromUint8Array(diagramData);
+  }
 
   const userConfig = await readSetting("drawio");
   let drawioeditor = "";
