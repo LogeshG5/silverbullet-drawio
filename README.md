@@ -22,6 +22,8 @@ Note: You will have to refresh the page to view the updates.
 
 ### Edit Existing Diagram
 
+Attach your diagrams to the page `![FlowChart](FlowChart.drawio.png)`.
+
 Run `Draw.io Edit diagram`.
 
 If multiple diagrams are present in a page, you will be prompted to choose one.
