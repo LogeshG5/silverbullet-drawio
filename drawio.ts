@@ -39,7 +39,7 @@ async function getEditorUrl(): Promise<string> {
 }
 
 async function getXmlData(diagramPath: string): Promise<string> {
-  let diagramData = await space.readAttachment(diagramPath);
+  let diagramData = await space.readDocument(diagramPath);
   const ext = getFileExtension(diagramPath);
   if (ext == "svg") {
     diagramData = String.fromCharCode.apply(null, diagramData);
