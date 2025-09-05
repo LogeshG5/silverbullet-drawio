@@ -96,6 +96,7 @@ async function receive(evt) {
         }
 
         case "export": {
+            console.log(`Exporting ${ext}`);
             let data;
             switch (ext) {
                 case "svg":
@@ -108,17 +109,15 @@ async function receive(evt) {
                     data = msg.xml; // This can be undefined
             }
             await syscaller("space.writeFile", filename, data);
-            syscaller("sync.performSpaceSync").then(() => {
-                syscaller("editor.reloadUI");
-            })
-            await syscaller("editor.flashNotification", "Refresh page to view changes!");
-            await close();
+            // syscaller("sync.performSpaceSync").then(() => {
+            //     syscaller("editor.reloadUI");
+            // })
+            // await syscaller("editor.flashNotification", "Refresh page to view changes!");
             break;
         }
 
         case "autosave":
         case "save":
-            console.log("save/autosave called; not writing manually");
             if (ext === 'drawio') {
                 // await syscaller("space.writeFile", filename, msg.xml);
                 window.diagramData = msg.xml;
@@ -139,7 +138,11 @@ async function receive(evt) {
             break;
 
         case "exit":
-            await close();
+            close();
+            syscaller("sync.performSpaceSync").then(() => {
+                syscaller("editor.reloadUI");
+            })
+            await syscaller("editor.flashNotification", "Refresh page to view changes!");
             break;
 
         default:
