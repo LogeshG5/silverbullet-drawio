@@ -1,13 +1,12 @@
 {
-  "tasks": {
-    "build": "silverbullet plug:compile -c deno.jsonc drawio.plug.yaml",
-    "watch": "silverbullet plug:compile -w -c deno.jsonc drawio.plug.yaml"
-  },
+ "tasks": {
+    "build": "deno run -A https://github.com/silverbulletmd/silverbullet/releases/download/edge/plug-compile.js -c deno.jsonc drawio.plug.yaml",
+    "watch": "deno run -A https://github.com/silverbulletmd/silverbullet/releases/download/edge/plug-compile.js -w -c deno.jsonc drawio.plug.yaml"
+  }, 
   // "importMap": "import_map.json"
-  "imports": {
-    "@silverbulletmd/silverbullet": "jsr:@silverbulletmd/silverbullet@^0.10.1",
+ "imports": {
+    "@silverbulletmd/silverbullet": "jsr:@silverbulletmd/silverbullet@^2.0.0",
     "handlebars": "https://esm.sh/handlebars",
-    "$sb/": "https://deno.land/x/silverbullet@0.10.1/plug-api/",
-    "js-base64": "https://cdn.jsdelivr.net/npm/js-base64@3.7.3/base64.min.js" 
-  }
+    "$sb/": "https://deno.land/x/silverbullet@2.0.0/plug-api/"
+  } 
 }
