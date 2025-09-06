@@ -51,7 +51,7 @@ async function drawIoEdit(diagramPath: string): Promise<void> {
       <div>
         <iframe 
           id="drawioiframe" 
-          src="${editorUrl}" 
+          src="${editorUrl}&saveAndExit=1&noSaveBtn=1&noExitBtn=1" 
           drawio-path="${diagramPath}">
         </iframe>
       </div>
@@ -174,7 +174,7 @@ export async function openDrawioEditor(): Promise<{
       <div>
         <iframe 
           id="drawioiframe" 
-          src="${editorUrl}" 
+          src="${editorUrl}&saveAndExit=0&noSaveBtn=1&noExitBtn=1" 
           drawio-path="${diagramPath}">
         </iframe>
       </div>

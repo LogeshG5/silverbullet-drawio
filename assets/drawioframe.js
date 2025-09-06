@@ -3,7 +3,6 @@ iframe?.setAttribute("frameborder", "0");
 
 // --- Helpers ---
 const syscaller = (typeof silverbullet !== "undefined" ? silverbullet.syscall : syscall);
-// export const syscaller = syscall;
 
 function base64ToPng(base64String) {
     const raw = base64String.split(",")[1] ?? "";
@@ -18,6 +17,10 @@ function base64ToSvg(base64String) {
 }
 
 async function close() {
+    syscaller("sync.performSpaceSync").then(() => {
+        syscaller("editor.reloadUI");
+    })
+    await syscaller("editor.flashNotification", "Refresh page to view changes!");
     window.removeEventListener("message", receive);
     await syscaller("editor.hidePanel", "modal");
 }
@@ -34,6 +37,8 @@ async function convertBlobToBase64(blob) {
         reader.readAsDataURL(blob);
     });
 }
+
+// --- SB Message handler ---
 try {
     globalThis.silverbullet.addEventListener("file-open", (event) => {
         // console.log("silvebullet file-open", event.detail.data);
@@ -49,6 +54,49 @@ try {
     });
 } catch (e) {
 }
+
+async function getFile(ext, filename) {
+    let data = "";
+
+    try {
+        data = await syscaller("space.readFile", filename);
+
+        switch (ext) {
+            case "svg":
+                data = new TextDecoder().decode(data);
+                break;
+
+            case "drawio":
+                break;
+
+            case "png":
+                data = await convertBlobToBase64(data);
+                break;
+
+            default:
+                console.warn(`Unsupported extension: ${ext}`);
+                return data;
+        }
+    } catch (err) {
+        console.error(`Failed to load file ${filename}:`, err);
+        return data;
+    }
+
+    return data;
+}
+
+function getExportData(ext, data) {
+    switch (ext) {
+        case "svg":
+            data = base64ToSvg(data);
+            break;
+        case "png":
+            data = base64ToPng(data);
+            break;
+    }
+    return data;
+}
+
 // --- Message handler ---
 async function receive(evt) {
     if (!evt.data) return;
@@ -76,18 +124,7 @@ async function receive(evt) {
             break;
 
         case "init": {
-            let data = "";
-            if (ext === "svg") {
-                const filedata = await syscaller("space.readFile", filename);
-                data = new TextDecoder().decode(filedata);
-            } else if (ext === 'drawio') {
-                const filedata = await syscaller("space.readFile", filename);
-                data = filedata;
-                // data = new TextDecoder().decode(filedata);
-            } else if (ext === 'png') {
-                const filedata = await syscaller("space.readFile", filename);
-                data = await convertBlobToBase64(filedata);
-            }
+            let data = await getFile(ext, filename);
             iframe?.contentWindow?.postMessage(
                 JSON.stringify({ action: "load", autosave: 1, xml: data }),
                 "*"
@@ -96,33 +133,16 @@ async function receive(evt) {
         }
 
         case "export": {
-            console.log(`Exporting ${ext}`);
-            let data;
-            switch (ext) {
-                case "svg":
-                    data = base64ToSvg(msg.data);
-                    break;
-                case "png":
-                    data = base64ToPng(msg.data);
-                    break;
-                default:
-                    data = msg.xml; // This can be undefined
-            }
+            const data = getExportData(ext, msg.data);
             await syscaller("space.writeFile", filename, data);
-            // syscaller("sync.performSpaceSync").then(() => {
-            //     syscaller("editor.reloadUI");
-            // })
-            // await syscaller("editor.flashNotification", "Refresh page to view changes!");
             break;
         }
 
         case "autosave":
         case "save":
             if (ext === 'drawio') {
-                // await syscaller("space.writeFile", filename, msg.xml);
                 window.diagramData = msg.xml;
                 globalThis.silverbullet.sendMessage("file-changed", { data: msg.xml });
-
             }
             else {
                 iframe?.contentWindow?.postMessage(
@@ -135,14 +155,17 @@ async function receive(evt) {
                     "*"
                 );
             }
+            // Notify save is done
+            iframe?.contentWindow?.postMessage(
+                JSON.stringify({ action: "status", messageKey: "allChangesSaved", modified: false }),
+                "*"
+            );
+            if (msg.exit) close();
+
             break;
 
         case "exit":
             close();
-            syscaller("sync.performSpaceSync").then(() => {
-                syscaller("editor.reloadUI");
-            })
-            await syscaller("editor.flashNotification", "Refresh page to view changes!");
             break;
 
         default:
