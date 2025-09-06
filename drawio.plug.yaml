@@ -13,12 +13,27 @@ functions:
       name: "Draw.io: Edit diagram"
       requireMode: r
 
-  createdrawio:
-    path: ./drawio.ts:createDrawioDiagram
-    command:
-      name: "Draw.io: Create diagram"
-      requireMode: r
-
   drawioEditor:
     path: ./drawio.ts:openDrawioEditor
     editor: ["drawio"]
+
+  createDiagramAsWidget:
+    path: ./drawio.ts:createDiagramAsWidget
+    command:
+      name: "Draw.io: Create diagram"
+      requireMode: r
+  
+  createDiagramAsAttachment:
+    path: ./drawio.ts:createDiagramAsAttachment
+    command:
+      name: "Draw.io: Create SVG/PNG diagram"
+      requireMode: r
+  
+  showWidget:
+    path: ./drawio.ts:showWidget
+    codeWidget: drawio
+
+  drawioSlashCommand:
+    path: ./drawio.ts:snippetSlashComplete
+    events:
+      - slash:complete

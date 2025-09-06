@@ -1,6 +1,11 @@
 const iframe = document.getElementById("drawioiframe");
 iframe?.setAttribute("frameborder", "0");
 
+const type = iframe.getAttribute('drawio-type');
+const filename = iframe.getAttribute('drawio-path');
+const index = filename.lastIndexOf('.');
+const ext = index !== -1 ? filename.slice(index + 1) : '';
+
 // --- Helpers ---
 const syscaller = (typeof silverbullet !== "undefined" ? silverbullet.syscall : syscall);
 
@@ -108,10 +113,6 @@ async function receive(evt) {
         return; // ignore invalid JSON
     }
 
-    const filename = iframe.getAttribute('drawio-path');
-    const index = filename.lastIndexOf('.');
-    const ext = index !== -1 ? filename.slice(index + 1) : '';
-
     switch (msg.event) {
         case "configure":
             iframe?.contentWindow?.postMessage(
@@ -141,8 +142,13 @@ async function receive(evt) {
         case "autosave":
         case "save":
             if (ext === 'drawio') {
-                window.diagramData = msg.xml;
-                globalThis.silverbullet.sendMessage("file-changed", { data: msg.xml });
+                if (type === 'widget') {
+                    await syscaller("space.writeFile", filename, msg.xml);
+                }
+                else {
+                    window.diagramData = msg.xml;
+                    globalThis.silverbullet.sendMessage("file-changed", { data: msg.xml });
+                }
             }
             else {
                 iframe?.contentWindow?.postMessage(
