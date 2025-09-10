@@ -62,7 +62,6 @@ try {
 
 async function getFile(ext, filename) {
     let data = "";
-
     try {
         data = await syscaller("space.readFile", filename);
 
@@ -72,6 +71,8 @@ async function getFile(ext, filename) {
                 break;
 
             case "drawio":
+                if (data instanceof Uint8Array)
+                    data = new TextDecoder().decode(data);
                 break;
 
             case "png":
