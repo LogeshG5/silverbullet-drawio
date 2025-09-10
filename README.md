@@ -2,23 +2,31 @@
 
 This plug adds [draw.io](https://www.drawio.com/) support to Silverbullet.
 
+https://github.com/user-attachments/assets/09564ef5-d2e0-4500-9b1d-8a70b5ccacd5
+
 ## Installation
 
-Run the {[Plugs: Add]} command and paste in: `github:logeshg5/silverbullet-drawio/drawio.plug.js`
+Add `ghr:LogeshG5/silverbullet-drawio` to the plugs array in your CONFIG page.
+
+```lua
+config.set {
+  plugs = {
+  "ghr:LogeshG5/silverbullet-drawio"
+  }
+}
+```
+
+Run Plugs: Update command and off you go!
 
 ## Usage
 
 ### Create New Diagram
 
-Run `Draw.io Create diagram` command and type in the name of the diagram.
+Run `Draw.io Create diagram` command and type in the name of the diagram (or) type `/drawio` in the editor.
 
-(or)
+Draw.io code block will be added to the editor & the widget will open.
 
-In the editor, type the name of the diagram e.g., `flowchar.drawio.svg`, select it and run `Draw.io Create diagram` command.
-
-Draw.io editor will open. Make your changes and click save.
-
-Note: You will have to refresh the page to view the updates.
+You can use `Navigate: Anything Picker` to open the file in full screen. 
 
 ### Edit Existing Diagram
 
@@ -28,15 +36,4 @@ Run `Draw.io Edit diagram`.
 
 If multiple diagrams are present in a page, you will be prompted to choose one.
 
-Note: You will have to refresh the page to view the updates.
 
-## Configuration
-
-This is optional.
-
-Editor URL can be configured using the SETTINGS page (default values shown):
-
-```yaml
-drawio:
-  editorUrl: https://embed.diagrams.net/?embed=1&spin=1&proto=json&configure=1
-```
