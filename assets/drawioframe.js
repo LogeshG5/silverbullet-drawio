@@ -1,10 +1,14 @@
 const iframe = document.getElementById("drawioiframe");
 iframe?.setAttribute("frameborder", "0");
 
+function getExt(filename) {
+    const index = filename.lastIndexOf('.');
+    const ext = index !== -1 ? filename.slice(index + 1) : '';
+    return ext;
+}
 const type = iframe.getAttribute('drawio-type');
-const filename = iframe.getAttribute('drawio-path');
-const index = filename.lastIndexOf('.');
-const ext = index !== -1 ? filename.slice(index + 1) : '';
+let filename = iframe.getAttribute('drawio-path');
+let ext = getExt(filename);
 
 // --- Helpers ---
 const syscaller = (typeof silverbullet !== "undefined" ? silverbullet.syscall : syscall);
@@ -45,16 +49,25 @@ async function convertBlobToBase64(blob) {
 
 // --- SB Message handler ---
 try {
-    globalThis.silverbullet.addEventListener("file-open", (event) => {
-        // console.log("silvebullet file-open", event.detail.data);
-        // unused as file is read in 'init' 
+    globalThis.silverbullet.addEventListener("file-open", async (event) => {
+        filename = event.detail.meta.name;
+        ext = getExt(filename);
+
+        iframe?.contentWindow?.postMessage(
+            JSON.stringify({ action: "load", autosave: 1, xml: event.detail.data }),
+            "*"
+        );
     });
-    globalThis.silverbullet.addEventListener("file-update", (event) => {
-        // console.log("silvebullet file-update", event.detail.data);
-        // post a message to init again
+    globalThis.silverbullet.addEventListener("file-update", async (event) => {
+        filename = event.detail.meta.name;
+        ext = getExt(filename);
+
+        iframe?.contentWindow?.postMessage(
+            JSON.stringify({ action: "load", autosave: 1, xml: event.detail.data }),
+            "*"
+        );
     });
     globalThis.silverbullet.addEventListener("request-save", (event) => {
-        console.log("silvebullet request-save", event);
         silverbullet.sendMessage("file-saved", { data: window.diagramData });
     });
 } catch (e) {
