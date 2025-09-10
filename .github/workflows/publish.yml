@@ -1,0 +1,38 @@
+name: Publish
+on:
+  push:
+    branches: main
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Build step
+        run: "deno task build"
+
+      - name: Update release tag
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "edge"
+          force_push_tag: true
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: false
+          tag_name: edge
+          body: Automated build from commit ${{ github.sha }}
+          files: |
+            drawio.plug.js
