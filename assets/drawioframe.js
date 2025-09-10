@@ -26,11 +26,8 @@ function base64ToSvg(base64String) {
 }
 
 async function close() {
-    syscaller("sync.performSpaceSync").then(() => {
-        syscaller("editor.reloadUI");
-    })
-    await syscaller("editor.flashNotification", "Refresh page to view changes!");
     window.removeEventListener("message", receive);
+    await syscaller("editor.reloadUI");
     await syscaller("editor.hidePanel", "modal");
 }
 
@@ -116,7 +113,7 @@ function getExportData(ext, data) {
     return data;
 }
 
-// --- Message handler ---
+// --- Draw.io Message handler ---
 async function receive(evt) {
     if (!evt.data) return;
 
